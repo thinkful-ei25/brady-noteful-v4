@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
-  fullname: String,
+  fullname: {type: String, default: ''},
   username: {type: String, required: true, unique: true},
   password: {type: String, required: true}
 });
@@ -25,6 +25,6 @@ userSchema.set('toJSON', {
 userSchema.methods.validatePassword = function(incomingPassword) {
   const user = this;
   return incomingPassword === user.password;
-};
+}; 
 
 module.exports = mongoose.model('User', userSchema);
