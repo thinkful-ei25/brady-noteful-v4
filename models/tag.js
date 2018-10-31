@@ -10,7 +10,7 @@ const schema = new mongoose.Schema({
 // Add `createdAt` and `updatedAt` fields
 schema.set('timestamps', true);
 
-schema.set({name: 1, userId: 1}, {unique: true});
+schema.index({name: 1, userId: 1}, {unique: true});
 
 // Transform output during `res.json(data)`, `console.log(data)` etc.
 schema.set('toJSON', {
