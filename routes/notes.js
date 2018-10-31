@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const Note = require('../models/note');
 const Folder = require('../models/folder');
+const Tag = require('../models/tag');
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ function validFolderPromise(folderId, userId) {
   if (folderId === '') {
     return Promise.resolve();
   }
-  return Folder.count({ _id: toUpdate.folderId, userId }).then(result => {
+  return Folder.count({ _id: folderId, userId }).then(result => {
     if (result < 1) {
       const err = new Error('The `folderId` is not valid');
       err.status = 400;
@@ -28,6 +29,10 @@ function validFolderPromise(folderId, userId) {
 }
 
 function validTagPromise(tags, userId) {
+  if(tags === undefined) {
+    return Promise.resolve();
+  }
+
   if(!Array.isArray(tags)) {
     const err = new Error('Your `tags` are not valid');
     err.status = 400;
@@ -251,3 +256,4 @@ router.delete('/:id', (req, res, next) => {
 });
 
 module.exports = router;
+
