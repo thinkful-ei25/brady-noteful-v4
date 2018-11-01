@@ -48,6 +48,8 @@ router.post('/', (req, res, next) => {
     });
   }
 
+  
+
   const maxMinFields = {
     username: {
       min: 3,
@@ -106,3 +108,5 @@ router.post('/', (req, res, next) => {
 });
 
 module.exports = router;
+
+
