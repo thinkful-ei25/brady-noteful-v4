@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post('/', (req, res, next) => {
   let { fullname, username, password } = req.body;
-  
+  fullname = fullname.trim();  
   
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
