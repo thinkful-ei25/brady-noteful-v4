@@ -11,14 +11,14 @@ const Folder = require('../models/folder');
 const Note = require('../models/note');
 const User = require('../models/user');
 const { folders, notes, users } = require('../db/data');
-const { JWT_SECRET, TEST_MONGODB_URI, JWT_EXPIRY } = require('../config');
+const { JWT_SECRET, TEST_MONGODB_URI } = require('../config');
 const jwt = require('jsonwebtoken');
 
 chai.use(chaiHttp);
 const expect = chai.expect;
 const sandbox = sinon.createSandbox();
 
-describe.only('Noteful API - Folders', function() {
+describe('Noteful API - Folders', function() {
   let token;
   let user;
 

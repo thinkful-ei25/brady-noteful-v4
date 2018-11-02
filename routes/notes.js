@@ -14,38 +14,38 @@ router.use(
   passport.authenticate('jwt', { session: false, failWithError: true })
 );
 
-
 function validFolderPromise(folderId, userId) {
-  if (folderId === '') {
+  if (folderId === undefined || folderId === '') {
     return Promise.resolve();
   }
-  return Folder.count({ _id: folderId, userId }).then(result => {
-    if (result < 1) {
-      const err = new Error('The `folderId` is not valid');
-      err.status = 400;
-      return Promise.reject(err);
-    }
-  });
+
+  return Folder.findOne({ _id: folderId, userId }).count()
+    .then(result => {
+      if (result < 1) {
+        const err = new Error('The `folderId` is not valid');
+        err.status = 400;
+        return Promise.reject(err);
+      }
+    });
 }
 
 function validTagPromise(tags, userId) {
-  if(tags === undefined) {
+  if (tags === undefined) {
     return Promise.resolve();
   }
 
-  if(!Array.isArray(tags)) {
+  if (!Array.isArray(tags)) {
     const err = new Error('Your `tags` are not valid');
     err.status = 400;
     return Promise.reject(err);
   }
 
-  return Tag.find({$and: [{_id: {$in:tags}, userId}]})
-    .then(results => {
-      if(tags.length !== results.length) {
-        const err = new Error('Your `tags` are not valid');
-        err.status = 400;
-      }
-    });
+  return Tag.find({ $and: [{ _id: { $in: tags }, userId }] }).then(results => {
+    if (tags.length !== results.length) {
+      const err = new Error('Your `tags` are not valid');
+      err.status = 400;
+    }
+  });
 }
 
 /* ========== GET/READ ALL ITEMS ========== */
@@ -142,9 +142,11 @@ router.post('/', (req, res, next) => {
     delete newNote.folderId;
   }
 
-  Promise.all([validFolderPromise(folderId, userId), validTagPromise(tags, userId)])
-    .then(() => 
-      Note.create(newNote))
+  Promise.all([
+    validFolderPromise(folderId, userId),
+    validTagPromise(tags, userId)
+  ])
+    .then(() => Note.create(newNote))
     .then(result => {
       res
         .location(`${req.originalUrl}/${result.id}`)
@@ -217,11 +219,15 @@ router.put('/:id', (req, res, next) => {
     });
   }
 
-  Promise.all([validFolderPromise(toUpdate.folderId, userId), validTagPromise(toUpdate.tags, userId)])
+  Promise.all([
+    validFolderPromise(toUpdate.folderId, userId),
+    validTagPromise(toUpdate.tags, userId)
+  ])
     .then(() => {
-      return Note.findOneAndUpdate({ _id: id, userId }, toUpdate, { new: true })
-        .populate('tags');
-    }) 
+      return Note.findOneAndUpdate({ _id: id, userId }, toUpdate, {
+        new: true
+      }).populate('tags');
+    })
     .then(result => {
       if (result) {
         res.json(result);
@@ -256,4 +262,3 @@ router.delete('/:id', (req, res, next) => {
 });
 
 module.exports = router;
-
